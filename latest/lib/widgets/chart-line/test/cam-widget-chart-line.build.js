@@ -39565,7 +39565,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 /**
  * @license
  * Lodash <https://lodash.com/>
- * Copyright JS Foundation and other contributors <https://js.foundation/>
+ * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
  * Released under MIT license <https://lodash.com/license>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -39576,7 +39576,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   var undefined;
   /** Used as the semantic version number. */
 
-  var VERSION = '4.17.11';
+  var VERSION = '4.17.14';
   /** Used as the size to enable large array optimizations. */
 
   var LARGE_ARRAY_SIZE = 200;
@@ -42465,14 +42465,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         value.forEach(function (subValue) {
           result.add(baseClone(subValue, bitmask, customizer, subValue, value, stack));
         });
-        return result;
-      }
-
-      if (isMap(value)) {
+      } else if (isMap(value)) {
         value.forEach(function (subValue, key) {
           result.set(key, baseClone(subValue, bitmask, customizer, key, value, stack));
         });
-        return result;
       }
 
       var keysFunc = isFull ? isFlat ? getAllKeysIn : getAllKeys : isFlat ? keysIn : keys;
@@ -43456,8 +43452,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
 
       baseFor(source, function (srcValue, key) {
+        stack || (stack = new Stack());
+
         if (isObject(srcValue)) {
-          stack || (stack = new Stack());
           baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack);
         } else {
           var newValue = customizer ? customizer(safeGet(object, key), srcValue, key + '', object, source, stack) : undefined;
@@ -45411,7 +45408,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         number = toNumber(number);
         precision = precision == null ? 0 : nativeMin(toInteger(precision), 292);
 
-        if (precision) {
+        if (precision && nativeIsFinite(number)) {
           // Shift with exponential notation to avoid floating-point issues.
           // See [MDN](https://mdn.io/round#Examples) for more details.
           var pair = (toString(number) + 'e').split('e'),
@@ -46686,7 +46683,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       return array;
     }
     /**
-     * Gets the value at `key`, unless `key` is "__proto__".
+     * Gets the value at `key`, unless `key` is "__proto__" or "constructor".
      *
      * @private
      * @param {Object} object The object to query.
@@ -46696,6 +46693,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 
     function safeGet(object, key) {
+      if (key === 'constructor' && typeof object[key] === 'function') {
+        return;
+      }
+
       if (key == '__proto__') {
         return;
       }
@@ -50659,6 +50660,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
           if (maxing) {
             // Handle invocations in a tight loop.
+            clearTimeout(timerId);
             timerId = setTimeout(timerExpired, wait);
             return invokeFunc(lastCallTime);
           }
@@ -55153,8 +55155,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           source = "__p += '"; // Compile the regexp to match each delimiter.
 
       var reDelimiters = RegExp((options.escape || reNoMatch).source + '|' + interpolate.source + '|' + (interpolate === reInterpolate ? reEsTemplate : reNoMatch).source + '|' + (options.evaluate || reNoMatch).source + '|$', 'g'); // Use a sourceURL for easier debugging.
+      // The sourceURL gets injected into the source that's eval-ed, so be careful
+      // with lookup (in case of e.g. prototype pollution), and strip newlines if any.
+      // A newline wouldn't be a valid sourceURL anyway, and it'd enable code injection.
 
-      var sourceURL = '//# sourceURL=' + ('sourceURL' in options ? options.sourceURL : 'lodash.templateSources[' + ++templateCounter + ']') + '\n';
+      var sourceURL = '//# sourceURL=' + (hasOwnProperty.call(options, 'sourceURL') ? (options.sourceURL + '').replace(/[\r\n]/g, ' ') : 'lodash.templateSources[' + ++templateCounter + ']') + '\n';
       string.replace(reDelimiters, function (match, escapeValue, interpolateValue, esTemplateValue, evaluateValue, offset) {
         interpolateValue || (interpolateValue = esTemplateValue); // Escape characters that can't be included in string literals.
 
@@ -55181,8 +55186,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       });
       source += "';\n"; // If `variable` is not specified wrap a with-statement around the generated
       // code to add the data object to the top of the scope chain.
+      // Like with sourceURL, we take care to not check the option's prototype,
+      // as this configuration is a code injection vector.
 
-      var variable = options.variable;
+      var variable = hasOwnProperty.call(options, 'variable') && options.variable;
 
       if (!variable) {
         source = 'with (obj) {\n' + source + '\n}\n';
@@ -57425,9 +57432,13 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       var lodashFunc = lodash[methodName];
 
       if (lodashFunc) {
-        var key = lodashFunc.name + '',
-            names = realNames[key] || (realNames[key] = []);
-        names.push({
+        var key = lodashFunc.name + '';
+
+        if (!hasOwnProperty.call(realNames, key)) {
+          realNames[key] = [];
+        }
+
+        realNames[key].push({
           'name': methodName,
           'func': lodashFunc
         });
