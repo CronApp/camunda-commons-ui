@@ -26,14 +26,6 @@
     "angular-scenario": "node_modules/angular-scenario/angular-scenario",
     "angular-touch": "node_modules/angular-touch/angular-touch",
     "angular-bootstrap": "vendor/ui-bootstrap-tpls-2.5.0-camunda",
-    "jquery-ui-core": "vendor/jquery.ui.core",
-    "jquery-ui-mouse": "vendor/jquery.ui.mouse",
-    "jquery-ui-widget": "vendor/jquery.ui.widget",
-    "jquery-ui-draggable": "vendor/jquery.ui.draggable",
-    "jquery-mousewheel": "vendor/jquery.mousewheel",
-    "jquery-overscroll": "vendor/jquery.overscroll",
-    "domReady": "vendor/domReady",
-    "placeholders-js": "vendor/placeholders.main",
     "prismjs": "vendor/prism",
     "bpmn-io": "node_modules/bower-bpmn-js/dist/bpmn-navigated-viewer",
     "dmn-io": "node_modules/dmn-js/dist/dmn-modeler"
@@ -45,10 +37,6 @@
       ],
       "exports": "angular"
     },
-    "placeholders-js": [
-      "vendor/placeholders.utils.js",
-      "vendor/placeholders.jquery.js"
-    ],
     "camunda-commons-ui": [
       "angular",
       "angular-resource",
@@ -91,25 +79,6 @@
     ],
     "angular-translate": [
       "angular"
-    ],
-    "jquery-overscroll": [
-      "jquery"
-    ],
-    "jquery-mousewheel": [
-      "jquery"
-    ],
-    "jquery-ui-core": [
-      "jquery"
-    ],
-    "jquery-ui-widget": [
-      "jquery-ui-core"
-    ],
-    "jquery-ui-mouse": [
-      "jquery-ui-widget"
-    ],
-    "jquery-ui-draggable": [
-      "jquery-ui-widget",
-      "jquery-ui-mouse"
     ]
   },
   "packages": [
