@@ -18,7 +18,7 @@
 'use strict';
 
 var angular = require('camunda-bpm-sdk-js/vendor/angular'),
-    template = "<div class=\"navbar-header\">\n  <button type=\"button\"\n          class=\"navbar-toggle\"\n          ng-class=\"{open: !!navbarOpen}\"\n          ng-click=\"navbarOpen = !navbarOpen\">\n    <em class=\"sr-only\">{{ toggleNavigation }}</em>\n    <span></span>\n    <span></span>\n    <span></span>\n  </button>\n\n  <a class=\"navbar-brand\"\n     href=\"#/\"\n     title=\"{{ brandName }} {{ appName }}\">\n    <span class=\"brand-logo\"></span>\n    <span class=\"brand-name\" ng-cloak>{{ brandName }}</span>\n  </a>\n\n  <div class=\"small-screen-warning\">\n    <span class=\"glyphicon glyphicon-exclamation-sign\"\n          uib-tooltip=\"{{ smallScreenWarning }}\"\n          tooltip-placement=\"bottom\"></span>\n  </div>\n</div>\n\n<nav class=\"cam-nav app-menu\">\n  <ul ng-class=\"{collapse: !navbarOpen}\">\n\n    <li engine-select></li>\n\n    <li class=\"account dropdown\"\n        ng-if=\"authentication.name\"\n        ng-cloak\n        uib-dropdown>\n      <a href\n         class=\"dropdown-toggle\"\n         uib-dropdown-toggle>\n        <span class=\"glyphicon glyphicon-user \"></span>\n        {{ (userName || authentication.name) }}\n      </a>\n\n      <ul class=\"dropdown-menu dropdown-menu-right\" uib-dropdown-menu>\n        <li class=\"profile\"\n            ng-if=\"currentApp !== 'welcome'\">\n          <a ng-href=\"{{ '../../welcome/:engine/' | uri }}\">\n            {{ myProfile | translate }}\n          </a>\n        </li>\n\n        <li class=\"divider\"\n            ng-if=\"currentApp !== 'welcome'\"></li>\n\n        <li class=\"logout\">\n          <a href\n             ng-click=\"logout()\">\n            {{ signOut | translate }}\n          </a>\n        </li>\n      </ul>\n    </li>\n\n    <li class=\"divider-vertical\"\n        ng-if=\"authentication.name\"\n        ng-cloak></li>\n\n    <li class=\"app-switch dropdown\"\n        ng-if=\"showAppDropDown\"\n        uib-dropdown>\n      <a href\n         class=\"dropdown-toggle\"\n         uib-dropdown-toggle>\n        <span class=\"glyphicon glyphicon-home\"></span>\n        <span class=\"caret\"></span>\n      </a>\n\n      <ul class=\"dropdown-menu dropdown-menu-right\" uib-dropdown-menu>\n        <li ng-repeat=\"(appName, app) in apps\"\n            ng-class=\"appName\">\n          <a ng-href=\"{{ ('../../' + appName + '/:engine/' | uri) + getTargetRoute() }}\">\n            {{ app.label }}\n          </a>\n        </li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n\n<div ng-transclude\n     class=\"sections-menu\"\n     ng-class=\"{collapse: !navbarOpen}\"></div>\n";
+    template = "<div class=\"navbar-header\">\n  <button type=\"button\"\n          class=\"navbar-toggle\"\n          ng-class=\"{open: !!navbarOpen}\"\n          ng-click=\"navbarOpen = !navbarOpen\">\n    <em class=\"sr-only\">{{ toggleNavigation }}</em>\n    <span></span>\n    <span></span>\n    <span></span>\n  </button>\n\n  <a class=\"navbar-brand\"\n     href=\"#/\"\n     title=\"{{ brandName }} {{ appName }}\">\n    <span class=\"brand-logo\"></span>\n    <span class=\"brand-name\" ng-cloak>{{ brandName }}</span>\n  </a>\n\n  <div class=\"small-screen-warning\">\n    <span class=\"glyphicon glyphicon-exclamation-sign\"\n          uib-tooltip=\"{{ smallScreenWarning | translate }}\"\n          tooltip-placement=\"bottom\"></span>\n  </div>\n</div>\n\n<nav class=\"cam-nav app-menu\">\n  <ul ng-class=\"{collapse: !navbarOpen}\">\n\n    <li engine-select></li>\n\n    <li class=\"account dropdown\"\n        ng-if=\"authentication.name\"\n        ng-cloak\n        uib-dropdown>\n      <a href\n         class=\"dropdown-toggle\"\n         uib-dropdown-toggle>\n        <span class=\"glyphicon glyphicon-user \"></span>\n        {{ (userName || authentication.name) }}\n      </a>\n\n      <ul class=\"dropdown-menu dropdown-menu-right\" uib-dropdown-menu>\n        <li class=\"profile\"\n            ng-if=\"currentApp !== 'welcome'\">\n          <a ng-href=\"{{ '../../welcome/:engine/' | uri }}\">\n            {{ myProfile | translate }}\n          </a>\n        </li>\n\n        <li class=\"divider\"\n            ng-if=\"currentApp !== 'welcome'\"></li>\n\n        <li class=\"logout\">\n          <a href\n             ng-click=\"logout()\">\n            {{ signOut | translate }}\n          </a>\n        </li>\n      </ul>\n    </li>\n\n    <li class=\"divider-vertical\"\n        ng-if=\"authentication.name\"\n        ng-cloak></li>\n\n    <li class=\"app-switch dropdown\"\n        ng-if=\"showAppDropDown\"\n        uib-dropdown>\n      <a href\n         class=\"dropdown-toggle\"\n         uib-dropdown-toggle>\n        <span class=\"glyphicon glyphicon-home\"></span>\n        <span class=\"caret\"></span>\n      </a>\n\n      <ul class=\"dropdown-menu dropdown-menu-right\" uib-dropdown-menu>\n        <li ng-repeat=\"(appName, app) in apps\"\n            ng-class=\"appName\">\n          <a ng-href=\"{{ ('../../' + appName + '/:engine/' | uri) + getTargetRoute() }}\">\n            {{ app.label }}\n          </a>\n        </li>\n      </ul>\n    </li>\n  </ul>\n</nav>\n\n<div ng-transclude\n     class=\"sections-menu\"\n     ng-class=\"{collapse: !navbarOpen}\"></div>\n";
 
 var apps = {
   welcome: {
@@ -34,7 +34,8 @@ var apps = {
     label: 'Tasklist'
   }
 };
-module.exports = ['$translate', function ($translate) {
+
+module.exports = function () {
   return {
     transclude: true,
     template: template,
@@ -50,15 +51,15 @@ module.exports = ['$translate', function ($translate) {
     },
     compile: function compile(el, attrs) {
       if (!attrs.toggleNavigation) {
-        attrs.toggleNavigation = $translate.instant('CAM_WIDGET_HEADER_TOGGLE_NAVIGATION');
+        attrs.toggleNavigation = 'CAM_WIDGET_HEADER_TOGGLE_NAVIGATION';
       }
 
       if (!attrs.myProfile) {
-        attrs.myProfile = $translate.instant('CAM_WIDGET_HEADER_MY_PROFILE');
+        attrs.myProfile = 'CAM_WIDGET_HEADER_MY_PROFILE';
       }
 
       if (!attrs.signOut) {
-        attrs.signOut = $translate.instant('CAM_WIDGET_HEADER_SIGN_OUT');
+        attrs.signOut = 'CAM_WIDGET_HEADER_SIGN_OUT';
       }
 
       if (!attrs.brandName) {
@@ -66,7 +67,7 @@ module.exports = ['$translate', function ($translate) {
       }
 
       if (!attrs.smallScreenWarning) {
-        attrs.smallScreenWarning = $translate.instant('CAM_WIDGET_HEADER_SMALL_SCREEN_WARNING');
+        attrs.smallScreenWarning = 'CAM_WIDGET_HEADER_SMALL_SCREEN_WARNING';
       }
     },
     controller: ['$scope', 'AuthenticationService', function ($scope, AuthenticationService) {
@@ -104,7 +105,7 @@ module.exports = ['$translate', function ($translate) {
       $scope.$watch('authentication', setApps);
     }]
   };
-}];
+};
 
 },{"camunda-bpm-sdk-js/vendor/angular":6}],2:[function(require,module,exports){
 /*
